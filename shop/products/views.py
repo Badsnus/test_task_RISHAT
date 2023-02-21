@@ -5,9 +5,9 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, reverse
 from rest_framework.views import APIView
-import stripe
 
 from products.models import Item
+from products.services import create_payment
 
 
 class ItemDetailView(generic.DetailView):
@@ -23,38 +23,18 @@ class ItemDetailView(generic.DetailView):
 class BuyItemView(APIView):
 
     def post(self, request, *args, **kwargs):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        item = get_object_or_404(Item, pk=kwargs.get('pk'))
         # payment = stripe.PaymentIntent.create(
         #     amount=item.price * 100,
         #     currency='usd',
         # )
         # print(payment)
-
-        session = stripe.checkout.Session.create(
-            line_items=[{
-                'price_data': {
-                    'currency': 'USD',
-                    'product_data': {
-                        'name': item.name,
-                    },
-                    'unit_amount': item.price * 100,
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url=settings.SITE_DOMAIN + reverse('products:success'),
-            cancel_url=settings.SITE_DOMAIN + reverse('products:cancel'),
-            # payment_intent_data=payment.client_secret,
-            # line_items=[
-            #     {
-            #         'payment_intent': ,
-            #         'quantity': 1,
-            #     },
-            # ],
+        session_id = create_payment(
+            get_object_or_404(Item, pk=kwargs.get('pk')),
+            settings.SITE_DOMAIN + reverse('products:success'),
+            settings.SITE_DOMAIN + reverse('products:cancel'),
         )
 
-        return JsonResponse(json.dumps({'session_id': session['id']}), safe=False)
+        return JsonResponse(json.dumps(session_id), safe=False)
 
 
 class SuccessView(generic.TemplateView):
