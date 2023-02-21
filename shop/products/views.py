@@ -1,13 +1,14 @@
 import json
 
-from django.views import generic
 from django.conf import settings
 from django.http import JsonResponse
+from django.views import generic
 from django.shortcuts import get_object_or_404, reverse
-from rest_framework.views import APIView
+from rest_framework import views
 
 from products.models import Item
 from products.services import create_payment
+from products.utils import CsrfExemptSessionAuthentication
 
 
 class ItemDetailView(generic.DetailView):
@@ -20,20 +21,15 @@ class ItemDetailView(generic.DetailView):
         return context
 
 
-class BuyItemView(APIView):
+class BuyItemView(views.APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
 
     def post(self, request, *args, **kwargs):
-        # payment = stripe.PaymentIntent.create(
-        #     amount=item.price * 100,
-        #     currency='usd',
-        # )
-        # print(payment)
         session_id = create_payment(
             get_object_or_404(Item, pk=kwargs.get('pk')),
             settings.SITE_DOMAIN + reverse('products:success'),
             settings.SITE_DOMAIN + reverse('products:cancel'),
         )
-
         return JsonResponse(json.dumps(session_id), safe=False)
 
 

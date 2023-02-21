@@ -9,7 +9,7 @@ def create_payment(item: Item, success_url, cancel_url) -> dict:
         settings.STRIPE_SECRET_KEY,
         line_items=[{
             'price_data': {
-                'currency': 'USD',
+                'currency': item.currency,
                 'product_data': {
                     'name': item.name,
                 },
@@ -20,12 +20,6 @@ def create_payment(item: Item, success_url, cancel_url) -> dict:
         mode='payment',
         success_url=success_url,
         cancel_url=cancel_url,
-        # payment_intent_data=payment.client_secret,
-        # line_items=[
-        #     {
-        #         'payment_intent': ,
-        #         'quantity': 1,
-        #     },
-        # ],
     )
+
     return {'session_id': session['id']}

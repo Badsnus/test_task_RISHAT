@@ -3,7 +3,7 @@
 
 {% block content %}
     <h1 class="text-lg">Товар: <span class="text-primary">{{ item.name }}</span></h1>
-    <h2 class="text-success">Цена: {{ item.price }}</h2>
+    <h2 class="text-success">Цена: {{ item.price }} {{ item.currency }}</h2>
     <p>Описание: {{ item.description }}</p>
     <button class="btn btn-lg btn-success" id="buy_button">Купить</button>
 {% endblock %}
