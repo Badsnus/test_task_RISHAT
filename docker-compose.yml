@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python shop/manage.py collectstatic --noinput &&
+             python shop/manage.py migrate &&
+             python shop/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./shop/:/usr/src/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - shop/.env
