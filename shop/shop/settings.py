@@ -13,6 +13,8 @@ DEBUG = os.getenv('DEBUG', default='OFF').lower() in ('on', 'yes', 'true')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
+SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'http://127.0.0.1:8000')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -87,3 +89,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# STRIPE
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', 'NO_SECRET_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', 'NO_SECRET_KEY')

@@ -5,5 +5,27 @@
     <h1 class="text-lg">Товар: <span class="text-primary">{{ item.name }}</span></h1>
     <h2 class="text-success">Цена: {{ item.price }}</h2>
     <p>Описание: {{ item.description }}</p>
-    <button class="btn btn-lg btn-success">Купить</button>
+    <button class="btn btn-lg btn-success" id="buy_button">Купить</button>
+{% endblock %}
+
+
+{% block js %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        let stripe = Stripe('{{ stripe_public_key }}');
+        let buy_button = document.getElementById('buy_button');
+        buy_button.addEventListener('click', () => {
+            fetch('{% url 'products:buy_item' item.pk %}', {method: 'POST'}).then(
+                (response) => {
+                    return response.json()
+                }
+            ).then((response) => {
+                const session_id = JSON.parse(response)['session_id']
+                stripe.redirectToCheckout({sessionId: session_id})
+            })
+        })
+
+
+    </script>
+
 {% endblock %}
